@@ -63,6 +63,15 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .summary{background:#173e32;color:white}
 .summary .eyebrow{color:#b1c99e}
 .summary .help{color:#b6c8ad}
+.profit-highlights{margin:18px 0 12px}
+.profit-highlight{background:#ffffff0d;border:1px solid #ffffff26;border-radius:8px;padding:17px;margin-bottom:12px}
+.profit-highlight.final-highlight{background:#d0e9a8;color:#173e32;border-color:#d0e9a8}
+.profit-highlight-label{font-size:14px;font-weight:600;margin-bottom:12px}
+.profit-highlight-values{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 16px}
+.profit-highlight-amount{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.profit-highlight-amount small{font-size:12px;font-weight:400}
+.profit-highlight-percent{font-size:32px;font-weight:750;font-variant-numeric:tabular-nums}
+.profit-highlight-note{font-size:11px;line-height:1.7;margin-top:8px;opacity:.8}
 .summary-row{
   display:grid;grid-template-columns:1fr auto;gap:14px;
   align-items:center;padding:18px 0;border-bottom:1px solid #ffffff24;
@@ -380,6 +389,26 @@ footer{font-size:11px;color:#8a9886;padding:15px 0;line-height:1.8}
 <section class="card summary">
   <div class="eyebrow">TRADE SUMMARY</div>
   <h2 style="margin-top:20px">거래 수익성 요약</h2>
+  <div class="profit-highlights" aria-live="polite">
+    <div class="profit-highlight">
+      <div class="profit-highlight-label">공헌이익</div>
+      <div class="profit-highlight-values">
+        <div class="profit-highlight-amount"><span id="topContributionAmount">—</span> <small data-currency>USD</small></div>
+        <div class="profit-highlight-percent" id="topContributionPercent">—</div>
+      </div>
+      <div class="profit-highlight-note">공헌이익 ÷ 매출액 × 100 · 커미션 차감 전</div>
+    </div>
+    <div class="profit-highlight final-highlight" id="topAfterCommission" hidden>
+      <div class="profit-highlight-label">법인커미션 차감 후 이익</div>
+      <div class="profit-highlight-values">
+        <div class="profit-highlight-amount"><span id="topAfterAmount">—</span> <small data-currency>USD</small></div>
+        <div class="profit-highlight-percent" id="topAfterPercent">—</div>
+      </div>
+      <div class="profit-highlight-note" id="topCommissionNote">—</div>
+      <div class="profit-highlight-note">커미션 차감 후 이익 ÷ 매출액 × 100</div>
+    </div>
+  </div>
+
 
   <div class="summary-row">
     <div class="summary-label">1. 판구매 갭</div>
@@ -912,6 +941,7 @@ function syncCurrencyLabels(){
   document.querySelectorAll("[data-usd]").forEach(el => el.hidden = eur);
   $("cbdPanel").hidden = !eur;
   $("cbdOutcome").hidden = !eur;
+  $("topAfterCommission").hidden = !eur;
   $("cbdRemark").hidden = !eur;
   $("cbdRemark").nextElementSibling.hidden = eur;
   document.querySelectorAll("[data-common-note]").forEach(el => el.hidden = eur);
@@ -1310,6 +1340,7 @@ const resultIDs = [
   "totalCost","totalMargin","operatingCost","finance","allCosts",
   "revenuePerTon","revenueTotal","revenueRate",
   "opProfitPerTon","opProfitTotal","opProfitRate",
+  "topContributionAmount","topContributionPercent","topAfterAmount","topAfterPercent","topCommissionNote",
   "contributionPerTon","contributionTotal","contributionRate","cbdCommissionTotal","cbdAfterTotal","cbdAfterRate"
 ];
 
@@ -1353,6 +1384,13 @@ function addCostRow(container,title,amount,formula,credit=false){
 }
 
 function render(v,r){
+  $("topContributionAmount").textContent = fmt(r.totalContributionProfit);
+  $("topContributionPercent").textContent = pct(r.contributionProfitRate);
+  $("topAfterAmount").textContent = v.currency === "EUR" ? fmt(r.afterTotal) : "—";
+  $("topAfterPercent").textContent = v.currency === "EUR" ? pct(r.afterRate) : "—";
+  $("topCommissionNote").textContent = v.currency === "EUR"
+    ? `법인커미션 ${fmt(v.cbdCommission)}% · ${fmt(r.commissionTotal)} EUR 차감` : "—";
+
   $("error").textContent = "";
 
   $("tradeGap").textContent = fmt(r.tradeGap);
