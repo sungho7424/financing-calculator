@@ -194,13 +194,13 @@ footer{font-size:11px;color:#8a9886;padding:15px 0;line-height:1.8}
   <div class="grid">
     <label>판매 인도조건
       <select id="sellTerm">
-        <option>FOB</option><option>CFR</option><option>CIF</option>
+        <option>FCA</option><option>FOB</option><option>CFR</option><option>CIF</option>
         <option>DPU</option><option>DAP</option><option>DDP</option>
       </select>
     </label>
     <label>구매 인도조건
       <select id="buyTerm">
-        <option>FOB</option><option>CFR</option><option>CIF</option>
+        <option>FCA</option><option>FOB</option><option>CFR</option><option>CIF</option>
         <option>DPU</option><option>DAP</option><option>DDP</option>
       </select>
     </label>
@@ -381,7 +381,7 @@ footer{font-size:11px;color:#8a9886;padding:15px 0;line-height:1.8}
   </p>
 </section>
 
-<section class="card" id="cbdPanel" hidden><h2>02. EUR 사전원가 · CBD 기준</h2><label>계약 기본값<select id="cbdPreset"><option value="standard">일반 계약 · 26년 10월 EP RP 3777톤</option><option value="german">독일법인 경유 · 26년 11월 EZ RP 6833톤(GER)</option></select><small>계약을 변경하면 EUR 입력값이 해당 계약의 기본값으로 바뀝니다.</small></label><p class="info">일반 계약을 기본으로 사용합니다. 포괄보험은 기본요율에 0.64 × 1.35 × 1.4를 곱합니다. 독일법인 경유 계약은 포괄보험 기본 미적용입니다. 환가료는 매출액과 여신기간을 사용하며 구매 결제일 5일을 차감하지 않습니다.</p><div class="grid"><label>여신기간<small>일</small><input id="cbdDays" type="number" value="150" min="0" step="any"></label><label>환가료율<small>연 % · 매출액 × 요율 × 여신기간 ÷ 360</small><input id="cbdDiscount" type="number" value="3.54" min="0" step="any"></label><label>사내이자율<small>연 % · 매출액 × 요율 × 여신기간 ÷ 365</small><input id="cbdInternal" type="number" value="0" min="0" step="any"></label><label>포괄보험 기본요율<small>% · 일반 0.6420 / 독일법인 경유 0.4380</small><input id="cbdInsuranceRate" type="number" value="0.642" min="0" step="any"></label><label>적하보험요율<small>% · 적용 여부는 별도 선택</small><input id="cbdCargoRate" type="number" value="0.0261" min="0" step="any"></label><label>법인커미션<small>% · 공헌이익에 곱함</small><input id="cbdCommission" type="number" value="25" min="0" step="any"></label><label>해상운반비<small>EUR · 총액</small><input id="cbdSea" type="number" value="0" min="0" step="any"></label><label>운반비<small>EUR · 총액</small><input id="cbdLand" type="number" value="0" min="0" step="any"></label><label>중개 수수료 (구매)<small>% · 매출액 기준</small><input id="cbdBrokerBuy" type="number" value="0" min="0" step="any"></label><label>중개 수수료 (판매)<small>% · 매출액 기준</small><input id="cbdBrokerSell" type="number" value="0" min="0" step="any"></label><label>지급 수수료<small>EUR · 총액</small><input id="cbdFee" type="number" value="0" min="0" step="any"></label><label>포장비<small>EUR · 총액</small><input id="cbdPacking" type="number" value="0" min="0" step="any"></label><label>선적비<small>EUR · 총액</small><input id="cbdShipping" type="number" value="0" min="0" step="any"></label><label>포괄보험 계수 1<small>엑셀 E34: 0.64</small><input id="cbdFactor1" type="number" value="0.64" min="0" step="any"></label><label>포괄보험 계수 2<small>엑셀 E34: 1.35</small><input id="cbdFactor2" type="number" value="1.35" min="0" step="any"></label><label>포괄보험 계수 3<small>엑셀 E34: 1.4</small><input id="cbdFactor3" type="number" value="1.4" min="0" step="any"></label></div><p class="info" id="cbdEffectiveInsurance"></p><label class="check"><input type="checkbox" id="cbdInsuranceOn" checked>포괄보험료 적용 (일반 계약 기본 적용 / 독일법인 경유 기본 미적용)</label><label class="check"><input type="checkbox" id="cbdCargoOn">적하보험료 적용 (기본 미적용 · 원본 E35=0)</label><p class="help">포괄보험 적용 시 매출액 × 기본요율 × 계수 1 × 계수 2 × 계수 3, 적하보험 적용 시 매출액 × 적하보험요율입니다. 다른 계약은 실제 기본요율과 계수를 입력하세요. USD의 국가·등급·할증 자동 산식은 EUR CBD 모드에 적용되지 않습니다. 사내이자 양수는 비용으로 차감합니다.</p></section>
+<section class="card" id="cbdPanel" hidden><h2>02. EUR 사전원가 · CBD 기준</h2><label>계약 기본값<select id="cbdPreset"><option value="standard">일반 계약 · 26년 10월 EP RP 3777톤</option><option value="ammonia">암모니아 FCA · 26년 10월 EP Ammonia 1035톤</option><option value="german">독일법인 경유 · 26년 11월 EZ RP 6833톤(GER)</option></select><small>계약을 변경하면 EUR 입력값이 해당 계약의 기본값으로 바뀝니다.</small></label><p class="info">일반 계약을 기본으로 사용합니다. 포괄보험은 기본요율에 0.64 × 1.35 × 1.4를 곱합니다. 독일법인 경유 계약은 포괄보험 기본 미적용입니다. 암모니아 계약은 구매·판매 FCA이며 적하보험 기본 미적용입니다. 환가료는 매출액과 여신기간을 사용하며 구매 결제일 5일을 차감하지 않습니다.</p><div class="grid"><label>여신기간<small>일</small><input id="cbdDays" type="number" value="150" min="0" step="any"></label><label>환가료율<small>연 % · 매출액 × 요율 × 여신기간 ÷ 360</small><input id="cbdDiscount" type="number" value="3.54" min="0" step="any"></label><label>사내이자율<small>연 % · 매출액 × 요율 × 여신기간 ÷ 365</small><input id="cbdInternal" type="number" value="0" min="0" step="any"></label><label>포괄보험 기본요율<small>% · 일반 0.6420 / 독일법인 경유 0.4380</small><input id="cbdInsuranceRate" type="number" value="0.642" min="0" step="any"></label><label>적하보험요율<small>% · 적용 여부는 별도 선택</small><input id="cbdCargoRate" type="number" value="0.0261" min="0" step="any"></label><label>법인커미션<small>% · 공헌이익에 곱함</small><input id="cbdCommission" type="number" value="25" min="0" step="any"></label><label>해상운반비<small>EUR · 총액</small><input id="cbdSea" type="number" value="0" min="0" step="any"></label><label>운반비<small>EUR · 총액</small><input id="cbdLand" type="number" value="0" min="0" step="any"></label><label>중개 수수료 (구매)<small>% · 매출액 기준</small><input id="cbdBrokerBuy" type="number" value="0" min="0" step="any"></label><label>중개 수수료 (판매)<small>% · 매출액 기준</small><input id="cbdBrokerSell" type="number" value="0" min="0" step="any"></label><label>지급 수수료<small>EUR · 총액</small><input id="cbdFee" type="number" value="0" min="0" step="any"></label><label>포장비<small>EUR · 총액</small><input id="cbdPacking" type="number" value="0" min="0" step="any"></label><label>선적비<small>EUR · 총액</small><input id="cbdShipping" type="number" value="0" min="0" step="any"></label><label>포괄보험 계수 1<small>엑셀 E34: 0.64</small><input id="cbdFactor1" type="number" value="0.64" min="0" step="any"></label><label>포괄보험 계수 2<small>엑셀 E34: 1.35</small><input id="cbdFactor2" type="number" value="1.35" min="0" step="any"></label><label>포괄보험 계수 3<small>엑셀 E34: 1.4</small><input id="cbdFactor3" type="number" value="1.4" min="0" step="any"></label></div><p class="info" id="cbdEffectiveInsurance"></p><label class="check"><input type="checkbox" id="cbdInsuranceOn" checked>포괄보험료 적용 (일반 계약 기본 적용 / 독일법인 경유 기본 미적용)</label><label class="check"><input type="checkbox" id="cbdCargoOn">적하보험료 적용 (기본 미적용 · 원본 E35=0)</label><p class="help">포괄보험 적용 시 매출액 × 기본요율 × 계수 1 × 계수 2 × 계수 3, 적하보험 적용 시 매출액 × 적하보험요율입니다. 다른 계약은 실제 기본요율과 계수를 입력하세요. USD의 국가·등급·할증 자동 산식은 EUR CBD 모드에 적용되지 않습니다. 사내이자 양수는 비용으로 차감합니다.</p></section>
 </form>
 
 <div>
@@ -978,12 +978,13 @@ function applyTradeState(currency){
 }
 
 function cbdPresetName(value = $("cbdPreset").value){
+ if(value === "ammonia") return "암모니아 FCA · 26년 10월 EP Ammonia 1035톤";
  return value === "german" ? "독일법인 경유 · 26년 11월 EZ RP 6833톤(GER)" : "일반 계약 · 26년 10월 EP RP 3777톤";
 }
 function applyCBDPreset(preset){
- const german = preset === "german";
- const buy = german ? 123.35 : 140.43, sell = german ? 126.87 : 145.35;
- const defaults={buy,sell,qty:german?6833.905:3777.712,targetRate:(sell/buy-1)*100,margin:0,trade:'triangle',country:'세르비아',sellTerm:'DPU',buyTerm:'DPU',cbdDays:150,cbdDiscount:german?3.714:3.54,cbdInternal:0,cbdInsuranceRate:german?.438:.642,cbdFactor1:.64,cbdFactor2:1.35,cbdFactor3:1.4,cbdCargoRate:.0261,cbdCommission:25,cbdSea:0,cbdLand:0,cbdBrokerBuy:0,cbdBrokerSell:0,cbdFee:0,cbdPacking:0,cbdShipping:0};
+ const german = preset === "german", ammonia = preset === "ammonia";
+ const buy = german ? 123.35 : ammonia ? 609.41 : 140.43, sell = german ? 126.87 : ammonia ? 630.74 : 145.35;
+ const defaults={buy,sell,qty:german?6833.905:ammonia?1035:3777.712,targetRate:(sell/buy-1)*100,margin:0,trade:'triangle',country:'세르비아',sellTerm:ammonia?'FCA':'DPU',buyTerm:ammonia?'FCA':'DPU',cbdDays:150,cbdDiscount:german?3.714:ammonia?3.778:3.54,cbdInternal:0,cbdInsuranceRate:german?.438:.642,cbdFactor1:.64,cbdFactor2:1.35,cbdFactor3:1.4,cbdCargoRate:.0261,cbdCommission:25,cbdSea:0,cbdLand:0,cbdBrokerBuy:0,cbdBrokerSell:0,cbdFee:0,cbdPacking:0,cbdShipping:0};
  Object.entries(defaults).forEach(([id,value])=>$(id).value=String(value));
  $("cbdInsuranceOn").checked=!german;$("cbdCargoOn").checked=false;
 }
@@ -1031,7 +1032,7 @@ function renderCBDDetails(v,r){
  $('cbdAfterRate').textContent='커미션 차감 후 이익률 (매출액 대비): '+pct(r.afterRate);
 }
 function exportCBD(v,r){
- const rows=[['항목','총액 EUR','톤당 EUR','산식'],...cbdRows(v,r).map(([title,total,formula])=>[title,total,total/v.qty,formula]),['수량',v.qty,'톤',''],['구매단가',v.buy,'EUR/톤',''],['판매단가',r.sell,'EUR/톤',''],['계산 기준',cbdPresetName(v.cbdPreset),'','중간 반올림 없음']];
+ const rows=[['항목','총액 EUR','톤당 EUR','산식'],...cbdRows(v,r).map(([title,total,formula])=>[title,total,total/v.qty,formula]),['수량',v.qty,'톤',''],['구매단가',v.buy,'EUR/톤',''],['판매단가',r.sell,'EUR/톤',''],['구매 인도조건',v.buyTerm,'',''],['판매 인도조건',v.sellTerm,'',''],['계산 기준',cbdPresetName(v.cbdPreset),'','중간 반올림 없음']];
  const csv='\uFEFF'+rows.map(row=>row.map(value=>'"'+String(value).replace(/"/g,'""')+'"').join(',')).join('\r\n');
  downloadFile(new Blob([csv],{type:'text/csv;charset=utf-8'}),fileName('csv'));
 }
@@ -1049,6 +1050,7 @@ async function createCBDReport(snapshot){
   text('수량 '+fmt(v.qty,3)+'톤 · 구매 '+fmt(v.buy)+' · 판매 '+fmt(r.sell)+' EUR/톤',64,140);
   text('환가료 '+v.cbdDiscount+'% / 360일 · 여신기간 '+v.cbdDays+'일',64,185);
   text('사내이자 '+v.cbdInternal+'% / 365일 · 커미션 '+v.cbdCommission+'%',64,230);
+  text('구매 인도조건 '+v.buyTerm+' · 판매 인도조건 '+v.sellTerm,64,270);
   if(page===0){
    const list=[['매출액',r.totalRevenue],['매출원가',r.cogs],['매출총이익',r.totalOperatingProfit],['환가료',r.discountTotal],['사내이자',r.internalTotal],['공헌이익',r.totalContributionProfit],['법인커미션',r.commissionTotal],['커미션 차감 후 이익',r.afterTotal]];
    let y=330;list.forEach(([label,total])=>{text(label,64,y,27);text(fmt(total)+' EUR',690,y,27);text('톤당 '+fmt(total/v.qty)+' EUR',690,y+40,21);y+=120;});
