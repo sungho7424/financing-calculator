@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파이낸싱 요율 계산기</title>
+
+<style>
+:root{
+  font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;
+  color:#244438;background:#f4f7f4;
+}
+*{box-sizing:border-box}
+body{margin:0}
+main{max-width:1320px;margin:auto;padding:30px 20px}
+header{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:15px;margin-bottom:25px;
+}
+h1{font-size:28px;margin:8px 0}
+h2{font-size:17px;margin:0 0 20px}
+h3{font-size:14px}
+p{line-height:1.8}
+.eyebrow{font-size:11px;letter-spacing:2px;color:#6d8b72}
+.subtitle{font-size:13px;color:#7b8e80;line-height:1.8}
+.layout{
+  display:grid;grid-template-columns:1.45fr 1fr;
+  gap:22px;align-items:start;
+}
+.card{
+  padding:23px;border:1px solid #dfe7dd;
+  background:white;border-radius:12px;margin-bottom:20px;
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.three{grid-template-columns:1fr 1fr 1fr}
+label{display:block;font-size:13px;font-weight:600}
+label small{
+  display:block;font-weight:normal;font-size:11px;
+  color:#879787;margin-top:5px;line-height:1.6;
+}
+input:not([type="checkbox"]),select{
+  width:100%;margin-top:8px;min-height:43px;
+  border:1px solid #d8e2d6;border-radius:6px;
+  padding:10px;font:inherit;color:#294b38;background:white;
+}
+input:focus,select:focus{outline:2px solid #bbd3b7}
+input:disabled,select:disabled,input[readonly]{
+  background:#eff4ec;color:#6a8063;
+}
+input[type="checkbox"]{accent-color:#28583b;margin-right:7px}
+.check{font-size:12px;font-weight:normal;margin:19px 0;line-height:1.8}
+.help{font-size:11px;color:#81917f;line-height:1.9;overflow-wrap:anywhere}
+.info{
+  background:#edf4e9;padding:11px;border-radius:6px;
+  font-size:11px;margin:14px 0 19px;color:#5e795c;line-height:1.8;
+}
+.separator{border-top:1px solid #e5ebe1;margin-top:20px;padding-top:20px}
+button{
+  cursor:pointer;border:1px solid #cfddca;background:#f2f7ee;
+  color:#315b3c;padding:11px 16px;border-radius:6px;font:inherit;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.summary{background:#173e32;color:white}
+.summary .eyebrow{color:#b1c99e}
+.summary .help{color:#b6c8ad}
+.summary-row{
+  display:grid;grid-template-columns:1fr auto;gap:14px;
+  align-items:center;padding:18px 0;border-bottom:1px solid #ffffff24;
+}
+.summary-label{font-size:13px;line-height:1.8}
+.summary-value{text-align:right;min-width:0}
+.summary-number{
+  font-size:24px;font-weight:700;
+  font-variant-numeric:tabular-nums;overflow-wrap:anywhere;
+}
+.summary-unit{font-size:10px;color:#b8cbb3;margin-top:4px}
+.summary-rate{
+  display:inline-block;background:#ffffff12;color:#d0e9a8;
+  padding:4px 9px;border-radius:5px;font-size:13px;margin-top:7px;
+}
+.unit{font-size:12px;font-weight:normal}
+.line{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:12px;padding:13px 0;border-bottom:1px solid #e8ede4;
+}
+.line span{font-size:13px}
+.line strong{font-size:15px;font-variant-numeric:tabular-nums}
+.cost{border-bottom:1px solid #e8ede4;padding:13px 0}
+.cost .line{border:none;padding:0}
+.cost small{
+  display:block;margin-top:7px;font-size:10px;
+  color:#899784;line-height:1.9;overflow-wrap:anywhere;
+}
+.credit{color:#43804d}
+.cost-heading{
+  background:#f0f5ec;padding:9px 11px;border-radius:5px;
+  font-size:12px;font-weight:700;margin-top:18px;
+}
+#error{
+  color:#a33725;padding:12px;background:#fff1e8;border-radius:6px;
+  font-size:12px;line-height:1.8;margin-bottom:20px;
+}
+#error:empty{display:none}
+.save-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+#saveStatus{min-height:20px}
+table{border-collapse:collapse;width:100%;font-size:11px;margin:15px 0}
+td,th{
+  border-bottom:1px solid #e0e7dc;padding:10px;
+  text-align:left;white-space:nowrap;
+}
+th{background:#edf4e8}
+.scroll{overflow:auto;max-height:460px}
+.profit-card{background:#f0f6eb;border-color:#d8e4cd}
+.profit-table{font-size:12px}
+.profit-table th,.profit-table td{padding:13px 8px}
+.profit-table th:not(:first-child),.profit-table td:not(:first-child){text-align:right}
+.profit-table tbody tr:last-child{font-weight:bold;color:#28583b}
+details summary{cursor:pointer;font-weight:600;line-height:1.8}
+footer{font-size:11px;color:#8a9886;padding:15px 0;line-height:1.8}
+[hidden]{display:none!important}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  h1{font-size:24px}
+}
+@media(max-width:480px){
+  main{padding:20px 12px}
+  .card{padding:18px}
+  .grid{gap:12px}
+  .three{grid-template-columns:1fr}
+  h1{font-size:21px}
+  header button{font-size:11px;padding:10px;white-space:nowrap}
+  .summary-number{font-size:22px}
+  .summary-label{font-size:12px}
+  .save-buttons button{font-size:12px;padding:12px 6px}
+  .profit-table{font-size:11px}
+}
+@media print{
+  button,.save-buttons,#saveStatus{display:none}
+  body{background:white}
+  main{max-width:none;padding:0}
+  .card{break-inside:avoid}
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<header>
+  <div>
+    <div class="eyebrow">TRADE DESK · FINANCING CALCULATOR</div>
+    <h1>파이낸싱 요율 계산기</h1>
+    <div class="subtitle">거래 조건에 따른 비용·영업이익·기여익을 확인하세요.</div>
+  </div>
+  <button type="button" id="reset">기본값으로</button>
+</header>
+
+<div class="layout">
+
+<form id="form" novalidate>
+
+<section class="card">
+  <h2>01. 거래 기본정보</h2>
+  <label>거래 통화
+    <select id="currency"><option value="USD">USD · 미국 달러</option><option value="EUR">EUR · 유로</option></select>
+  </label>
+  <p class="help">선택한 통화 기준으로 금액을 입력하세요. 자동 환산되지 않습니다.</p>
+  <p class="info" id="currencyInfo" role="status"></p>
+
+  <div class="grid">
+    <label>거래 유형
+      <select id="trade">
+        <option value="export">직수출</option>
+        <option value="triangle">중계무역 · 삼국간</option>
+      </select>
+    </label>
+    <label>판매 국가
+      <input id="country" list="countries" value="베트남" autocomplete="off">
+      <datalist id="countries"></datalist>
+    </label>
+  </div>
+
+  <div class="info" id="countryInfo"></div>
+
+  <div class="grid">
+    <label>판매 인도조건
+      <select id="sellTerm">
+        <option>FOB</option><option>CFR</option><option>CIF</option>
+        <option>DAP</option><option>DDP</option>
+      </select>
+    </label>
+    <label>구매 인도조건
+      <select id="buyTerm">
+        <option>FOB</option><option>CFR</option><option>CIF</option>
+        <option>DAP</option><option>DDP</option>
+      </select>
+    </label>
+  </div>
+
+  <p class="help">
+    판매조건이 CIF·DAP·DDP이면 적하보험료를 판매단가의 0.0268%로 계산합니다.<br>
+    구매조건은 거래 기록에 반영하며 구매단가에 포함된 비용을 중복 가산하지 않습니다.
+  </p>
+
+  <div class="grid three">
+    <label>구매단가
+      <small><span data-currency>USD</span> / 톤</small>
+      <input id="buy" type="number" value="1000" min="0" step="any">
+    </label>
+    <label>판매단가
+      <small><span data-currency>USD</span> / 톤</small>
+      <input id="sell" type="number" value="1050" min="0" step="any">
+    </label>
+    <label>수량
+      <small>톤</small>
+      <input id="qty" type="number" value="100" min="0" step="any">
+    </label>
+  </div>
+
+  <div class="grid separator">
+    <label>당사 타겟 요율
+      <small>% · 구매단가 대비 매매차액</small>
+      <input id="targetRate" type="number" value="5.00" step="0.01">
+    </label>
+    <label>우리 마진
+      <small><span data-currency>USD</span> / 톤 · 모든 비용 차감 후 기여익</small>
+      <input id="margin" type="number" value="0.00" step="0.01">
+    </label>
+  </div>
+
+  <p class="help">
+    판매단가 = 구매단가 × (1 + 타겟 요율 ÷ 100)<br>
+    우리 마진 = 판매단가 − 구매단가 − 영업비용 − 순 금융비용<br>
+    판매단가·타겟 요율·우리 마진은 서로 연동됩니다.<br>
+    구매단가 변경 시 타겟 요율을 유지합니다.<br>
+    마진을 입력하면 보험료와 금융비용까지 반영해 판매단가를 역산합니다.
+  </p>
+</section>
+
+<section class="card">
+  <h2>02. 결제 및 금융 조건</h2>
+
+  <div class="grid">
+    <label>판매 결제
+      <select id="method">
+        <option value="LC">L/C</option>
+        <option value="TT">T/T</option>
+      </select>
+    </label>
+    <label>판매 Usance days
+      <select id="sellDays">
+        <option>30</option><option>60</option><option>90</option>
+        <option>120</option><option>150</option><option selected>180</option>
+      </select>
+    </label>
+    <label>구매 지급수단
+      <select id="purchaseMethod">
+        <option value="LC">L/C</option>
+        <option value="TT">T/T</option>
+        <option value="domestic">국내 외상 · 구매승인서</option>
+      </select>
+    </label>
+    <label>구매 Usance days
+      <small>LC A/S는 0 입력</small>
+      <input id="buyDays" type="number" value="90" min="0" step="1">
+    </label>
+  </div>
+
+  <p class="help">모든 날짜는 동일한 기준일(예: B/L일)을 0일로 가정합니다.</p>
+
+  <label class="check">
+    <input id="nego" type="checkbox" checked>
+    판매채권 네고 / 할인
+  </label>
+
+  <p class="help">
+    판매 TT 선택 시 네고가 기본 해제됩니다.
+    실제로 채권을 할인하는 경우에만 선택하세요.
+  </p>
+
+  <div class="grid">
+    <label>네고대금 수령일
+      <small>기준일 + 일</small>
+      <input id="negoDay" type="number" value="0" min="0" step="1">
+    </label>
+    <label>환가료율
+      <small>연 % · 365일 기준</small>
+      <input id="discount" type="number" value="5" min="0" step="any">
+    </label>
+    <label>사내기여이자율
+      <small>연 % · 360일 기준</small>
+      <input id="interest" type="number" value="4.5" min="0" step="any">
+    </label>
+    <label>사내부담이자율
+      <small>연 % · 360일 기준</small>
+      <input id="burdenInterest" type="number" value="4.5" min="0" step="any">
+    </label>
+    <label>구매 LC 개설 수수료율
+      <small>연 % · 영업비용 · 최소 30일 / 365</small>
+      <input id="opening" type="number" value="0.1" min="0" step="any">
+    </label>
+  </div>
+
+  <p class="help">
+    LC 개설수수료 = 구매단가 × 연 수수료율 ÷ 100 × 적용일수 ÷ 365<br>
+    LC A/S~30일은 30일, 30일 초과는 구매 Usance 일수를 적용합니다.<br>
+    LC 개설수수료는 영업비용으로 분류합니다.
+  </p>
+</section>
+
+<section class="card">
+  <h2>03. 보험·운임·기타 직접비</h2>
+
+  <div class="grid">
+    <label id="lcGradeLabel">적용 국가등급
+      <small>LC · 판매 국가 기준 자동 적용</small>
+      <input id="lcGrade" readonly>
+    </label>
+
+    <label id="buyerGradeLabel" hidden>수입자 신용등급
+      <small>TT · D/A, CAD, COD 요율 적용</small>
+      <select id="buyerGrade">
+        <option>A</option><option>B</option><option>C</option>
+        <option>D</option><option>E</option><option>F</option>
+        <option>G</option><option>R</option>
+      </select>
+    </label>
+
+    <label>적하보험료율
+      <small>% · 판매 CIF·DAP·DDP일 때 적용</small>
+      <input id="cargoRateDisplay" value="0.0268" readonly>
+    </label>
+
+    <label>실별 할인 / 할증률
+      <small>% · 수출보험 할인은 음수, 예: -60</small>
+      <input id="loss" type="number" value="0" min="-100" step="any">
+    </label>
+
+    <label>Underwriter 할증률
+      <small>% · 수출보험</small>
+      <input id="underwriter" type="number" value="0" min="0" step="any">
+    </label>
+
+    <label>운임
+      <small><span data-currency>USD</span> / 톤 · 당사 추가 부담분</small>
+      <input id="freight" type="number" value="0" min="0" step="any">
+    </label>
+
+    <label>기타 직접비
+      <small><span data-currency>USD</span> / 톤 · 통관·관세·내륙운송 등</small>
+      <input id="other" type="number" value="0" min="0" step="any">
+    </label>
+  </div>
+
+  <label class="check">
+    <input id="risk" type="checkbox">
+    인수제한국 · 심층감시국 비상위험 할증 (+25%)
+  </label>
+
+  <label class="check">
+    <input id="small" type="checkbox">
+    순자산 1억불 미만 은행 개설 LC 할증 (+25%)
+  </label>
+
+  <p class="help">
+    수출보험료·적하보험료·운임·LC 개설료는 영업비용으로 반영합니다.<br>
+    기타 직접비에는 별도 입력한 운임과 자동 계산되는 보험료·LC 개설료를
+    중복 입력하지 마세요.<br>
+    구매단가에 이미 포함된 비용은 추가 부담하는 부분만 입력하세요.<br>
+    심층감시국은 국가 변경 시 첨부자료로 자동 반영합니다.
+    인수제한 여부는 별도 확인하세요.
+  </p>
+</section>
+
+</form>
+
+<div>
+
+<section class="card summary">
+  <div class="eyebrow">TRADE SUMMARY</div>
+  <h2 style="margin-top:20px">거래 수익성 요약</h2>
+
+  <div class="summary-row">
+    <div class="summary-label">1. 판구매 갭</div>
+    <div class="summary-value">
+      <div class="summary-number" id="tradeGap">—</div>
+      <div class="summary-unit"><span data-currency>USD</span> / 톤</div>
+      <div class="summary-rate" id="tradeGapRate">—</div>
+    </div>
+  </div>
+
+  <div class="summary-row">
+    <div class="summary-label">2. 예상 톤당 비용</div>
+    <div class="summary-value">
+      <div class="summary-number" id="perTon">—</div>
+      <div class="summary-unit"><span data-currency>USD</span> / 톤</div>
+      <div class="summary-rate" id="costRate">—</div>
+    </div>
+  </div>
+
+  <div class="summary-row">
+    <div class="summary-label">3. 예상 톤당 마진</div>
+    <div class="summary-value">
+      <div class="summary-number" id="netMargin">—</div>
+      <div class="summary-unit"><span data-currency>USD</span> / 톤</div>
+      <div class="summary-rate" id="marginRate">—</div>
+    </div>
+  </div>
+
+  <div class="summary-row">
+    <div class="summary-label">4. 총 비용</div>
+    <div class="summary-value">
+      <div class="summary-number" id="totalCost">—</div>
+      <div class="summary-unit"><span data-currency>USD</span></div>
+    </div>
+  </div>
+
+  <div class="summary-row">
+    <div class="summary-label">5. 총 마진</div>
+    <div class="summary-value">
+      <div class="summary-number" id="totalMargin">—</div>
+      <div class="summary-unit"><span data-currency>USD</span></div>
+    </div>
+  </div>
+
+  <p class="help">
+    이 표의 요율은 구매단가 대비 기준입니다.<br>
+    예상 톤당 비용 = 영업비용 + 순 금융비용<br>
+    예상 톤당 마진 = 모든 비용 차감 후 기여익
+  </p>
+  <p class="help" id="marginFormula"></p>
+  <p class="help" id="totalFormula"></p>
+</section>
+
+<div id="error" role="alert"></div>
+
+<section class="card">
+  <h2>비용 상세 <span class="unit"><span data-currency>USD</span> / 톤</span></h2>
+
+  <div class="cost-heading">영업비용 · 영업이익에서 차감</div>
+  <div id="operatingBreakdown"></div>
+  <div class="line">
+    <span>영업비용 합계 / 톤</span>
+    <strong id="operatingCost">—</strong>
+  </div>
+
+  <div class="cost-heading">금융비용 · 기여익에서 추가 반영</div>
+  <div id="financeBreakdown"></div>
+  <div class="line">
+    <span>순 금융비용 / 톤</span>
+    <strong id="finance">—</strong>
+  </div>
+
+  <div class="line">
+    <span>전체 비용 / 톤</span>
+    <strong id="allCosts">—</strong>
+  </div>
+
+  <p class="help" id="rateFormula"></p>
+
+  <button type="button" id="export" style="width:100%">
+    계산 내역 CSV 다운로드
+  </button>
+
+  <div class="save-buttons">
+    <button type="button" id="savePNG">PNG 이미지 저장</button>
+    <button type="button" id="savePDF">PDF 파일 저장</button>
+  </div>
+
+  <p class="help" id="saveStatus" role="status" aria-live="polite"></p>
+
+  <p class="help">
+    거래 조건·비용·최종 손익 요약을 함께 저장합니다.<br>
+    PDF는 이미지 기반의 2페이지 보고서입니다.
+  </p>
+</section>
+
+<section class="card">
+  <h2>계산 기준 · Remark</h2>
+
+  <p class="help">
+    <b>보험요율: 2026년 1월 기준</b><br>
+    2026.01.15 ~ 2027.01.14 선적분 적용<br>
+    <b>국가등급: 2026년 7월 기준</b><br>
+    사용자 첨부 2026.07.02 국가등급 자료 적용<br><br>
+
+    적하보험료는 판매 CIF·DAP·DDP에 판매단가의
+    <b>0.0268%</b>를 적용합니다.<br><br>
+
+    영업비용 = 수출보험료 + 적하보험료 + 운임
+    + LC 개설수수료 + 기타 직접비<br><br>
+
+    순 금융비용 = 환가료 + 부담이자 − 기여이자<br><br>
+
+    영업이익 = 판매 − 구매 − 영업비용<br>
+    기여익 = 영업이익 − 순 금융비용<br><br>
+
+    운임 등은 자동 추정하지 않고 입력값을 적용합니다.<br>
+    분할결제·환율·은행 영업일·비용 지급 시점별
+    추가 자금점유는 반영하지 않습니다.<br>
+    보험 인수 가능 여부와 최종 요율은 별도 확인하세요.<br><br>
+
+    총액은 중간 반올림 없이 계산한 톤당 원값에 수량을 곱합니다.
+  </p>
+</section>
+
+<section class="card profit-card">
+  <div class="eyebrow">FINAL PROFIT SUMMARY</div>
+  <h2 style="margin-top:10px">최종 손익 요약</h2>
+
+  <div class="scroll">
+    <table class="profit-table">
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>톤당 <span data-currency>USD</span></th>
+          <th>총 <span data-currency>USD</span></th>
+          <th>요율</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>외형</td>
+          <td id="revenuePerTon">—</td>
+          <td id="revenueTotal">—</td>
+          <td id="revenueRate">—</td>
+        </tr>
+        <tr>
+          <td>영업이익</td>
+          <td id="opProfitPerTon">—</td>
+          <td id="opProfitTotal">—</td>
+          <td id="opProfitRate">—</td>
+        </tr>
+        <tr>
+          <td>기여익</td>
+          <td id="contributionPerTon">—</td>
+          <td id="contributionTotal">—</td>
+          <td id="contributionRate">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="help">
+    이 표의 요율은 외형(판매금액) 대비 기준입니다.<br>
+    외형은 판매단가 × 수량이며 요율은 100%입니다.
+  </p>
+  <p class="help" id="profitFormula"></p>
+</section>
+
+</div>
+</div>
+
+<section class="card">
+  <details>
+    <summary>보험요율표 보기 · 2026년 1월 기준</summary>
+    <div id="rateTables"></div>
+  </details>
+</section>
+
+<section class="card">
+  <details>
+    <summary>국가등급 현황 보기 · 2026년 7월 기준</summary>
+    <input id="countrySearch" placeholder="국가명 검색" aria-label="국가등급 검색">
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>국가</th><th>등급</th><th>등급 적용일</th><th>심층감시국</th></tr>
+        </thead>
+        <tbody id="countryRows"></tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<footer>
+  브라우저 안에서 계산합니다. 입력값은 자동 저장되지 않습니다.
+  결과는 CSV·PNG·PDF로 보관하세요.
+</footer>
+
+</main>
+
+<script>
+"use strict";
+
+/*
+국가등급: 2026년 7월 / 2026.07.02 사용자 첨부자료
+국가명 | 등급 | 실제 등급 적용일 | 심층감시국 여부
+*/
+const countryData = `
+베트남|3|2026.07.02|N
+나미비아|5|2026.07.02|N
+가나|7|2025.10.17|N
+가봉|7|2025.10.17|N
+가이아나|5|2025.10.17|N
+감비아|7|2025.10.17|N
+과달루프|3|2025.12.30|N
+과테말라|4|2025.10.17|N
+괌|3|2025.12.30|N
+그레나다|5|2024.11.21|N
+그리스|4|2025.12.30|N
+그린랜드|3|2025.12.30|N
+기니|7|2025.10.17|N
+기니비사우|7|2025.10.17|N
+나바사섬|7|2025.12.30|N
+나우루|3|2024.11.21|N
+나이지리아|6|2025.10.17|N
+남수단|7|2026.07.02|N
+남아프리카공화국|4|2026.07.02|Y
+남조지아.남샌드위치군도|7|2025.12.30|N
+네덜란드|1|2025.12.30|N
+네팔|6|2026.07.02|Y
+노르웨이|1|2025.12.30|N
+노르웨이속령|7|2025.12.30|N
+노포크 아일랜드|7|2025.12.30|N
+뉴질랜드|1|2025.12.30|N
+뉴칼레도니아|4|2025.12.30|N
+니우에|5|2025.12.30|N
+니제르|7|2025.10.17|N
+니카라과|7|2025.10.17|Y
+대만|2|2026.07.02|N
+대한민국|1|2025.12.30|N
+덴마크|1|2025.12.30|N
+도미니카 연방|5|2024.11.21|N
+도미니카공화국|4|2025.10.17|Y
+독일|1|2025.12.30|N
+동티모르|6|2026.07.02|N
+라오스|7|2026.07.02|Y
+라이베리아|7|2025.10.17|N
+라트비아|2|2025.12.30|N
+러시아|7|2026.02.06|N
+레바논|7|2026.02.06|N
+레소토|6|2026.07.02|N
+레위니옹|4|2025.12.30|N
+로스속령|7|2025.12.30|N
+루마니아|3|2026.02.06|N
+룩셈부르크|1|2025.12.30|N
+르완다|6|2026.07.02|N
+리비아|7|2026.02.06|N
+리투아니아|2|2025.12.30|N
+리히텐슈타인|1|2024.11.21|N
+마다가스카르|7|2026.07.02|N
+마샬군도|5|2024.11.21|N
+마요뜨|5|2025.12.30|N
+마카오|2|2024.11.21|N
+말라위|7|2026.07.02|N
+말레이시아|2|2026.07.02|N
+말리|7|2025.10.17|N
+말티니크|3|2025.12.30|N
+맨섬|3|2025.12.30|N
+멕시코|3|2025.10.17|N
+멜리야|4|2025.12.30|N
+모나코|2|2024.11.21|N
+모로코|3|2026.02.06|N
+모리셔스|3|2026.07.02|N
+모리타니아|6|2025.10.17|N
+모잠비크|7|2026.07.02|N
+몬테네그로|6|2026.02.06|N
+몬트세라트|7|2025.12.30|N
+몰도바|6|2026.02.06|N
+몰디브|7|2026.07.02|Y
+몰타|2|2023.10.06|N
+몽골|6|2026.07.02|N
+미국|1|2025.12.30|N
+미국령 버진군도|3|2025.12.30|N
+미국령 사모아|5|2024.11.21|N
+미드웨이섬|7|2025.12.30|N
+미얀마|7|2026.07.02|N
+미크로네시아|6|2024.11.21|N
+바누아투|6|2024.11.21|N
+바레인|6|2026.02.06|N
+바베이도스|6|2024.11.21|N
+바티칸|2|2024.11.21|N
+바하마|4|2025.10.17|N
+방글라데시|6|2026.07.02|Y
+버뮤다|2|2025.12.30|N
+베네수엘라|7|2025.10.17|N
+베넹|6|2025.10.17|N
+베이커홀랜드섬|7|2025.12.30|N
+벨기에|1|2025.12.30|N
+벨라루스|7|2026.02.06|N
+벨리즈|7|2023.10.06|Y
+보스니아-헤르체코비나|6|2026.02.06|N
+보츠와나|3|2026.07.02|N
+볼리비아|7|2025.10.17|N
+부룬디|7|2026.07.02|N
+부르키나파소|7|2025.10.17|N
+부탄|6|2026.07.02|N
+북마리아나 군도|3|2025.12.30|N
+북마케도니아|5|2026.02.06|N
+북한|7|2026.07.02|N
+불가리아|2|2026.02.06|N
+브라질|4|2025.10.17|N
+브루나이|3|2024.11.21|N
+사모아|5|2025.12.30|N
+사우디아라비아|2|2026.02.06|N
+사이프러스|4|2025.12.30|N
+산 마리노|4|2024.11.21|N
+상투메프린시페|6|2024.11.21|N
+세네갈|7|2025.10.17|Y
+세르비아|4|2026.02.06|N
+세우타|4|2025.12.30|N
+세이셸|5|2023.10.06|Y
+세인트 루시아|4|2024.11.21|N
+세인트 빈센트 그레나딘|6|2024.11.21|N
+세인트 키츠 네비스|3|2024.11.21|N
+세인트 피에르 미켈론|4|2025.12.30|N
+세인트헬레나|5|2025.12.30|N
+소말리아|7|2026.07.02|N
+솔로몬제도|7|2024.11.21|N
+수단|7|2026.07.02|N
+수리남|7|2025.10.17|Y
+스리랑카|7|2026.07.02|N
+스발바르|7|2025.12.30|N
+스웨덴|1|2025.12.30|N
+스위스|1|2025.12.30|N
+스페인|2|2025.12.30|N
+슬로바키아|2|2025.12.30|N
+슬로베니아|2|2025.12.30|N
+시리아|7|2026.02.06|N
+시에라리온|7|2025.10.17|N
+싱가포르|1|2026.07.02|N
+아랍에미리트 연합|2|2026.02.06|N
+아루바|4|2025.10.17|N
+아르메니아|5|2026.02.06|N
+아르헨티나|7|2025.10.17|N
+아쉬모아 카르티어 아일랜드|7|2025.12.30|N
+아이슬란드|2|2025.12.30|N
+아이티|7|2025.10.17|N
+아일랜드|1|2025.12.30|N
+아제르바이잔|4|2026.02.06|N
+아프가니스탄|7|2026.07.02|N
+안도라|3|2024.11.21|N
+알랜드아일랜드|4|2025.12.30|N
+알바니아|4|2026.02.06|N
+알제리|5|2026.02.06|N
+앙골라|6|2026.07.02|N
+앤티가 바부다|7|2025.10.17|N
+앵귈라|4|2025.12.30|N
+얀마옌|7|2025.12.30|N
+에리트리아|7|2026.07.02|N
+에스와티니|6|2026.07.02|N
+에스토니아|2|2025.12.30|N
+에콰도르|6|2025.10.17|N
+에티오피아|7|2026.07.02|N
+엘살바도르|6|2025.10.17|N
+영국|1|2025.12.30|N
+영국남극속령|7|2025.12.30|N
+영국령 버진군도|3|2025.12.30|N
+영국령 인도양지역|7|2025.12.30|N
+예멘|7|2026.02.06|N
+오만|3|2026.02.06|N
+오스트리아|1|2025.12.30|N
+온두라스|5|2025.10.17|N
+요르단|5|2026.02.06|N
+우간다|6|2026.07.02|N
+우루과이|3|2025.10.17|N
+우즈베키스탄|5|2026.02.06|Y
+우크라이나|7|2026.02.06|N
+월리스푸투나제도|5|2025.12.30|N
+웨이크아일랜드|7|2025.12.30|N
+이라크|7|2026.02.06|N
+이란|7|2026.02.06|N
+이스라엘|3|2025.12.30|Y
+이집트|6|2026.02.06|N
+이탈리아|2|2025.12.30|N
+인도|3|2026.07.02|N
+인도네시아|3|2026.07.02|N
+일본|1|2025.12.30|N
+자메이카|5|2025.10.17|N
+자비스섬|7|2025.12.30|N
+잠비아|7|2026.07.02|N
+적도기니|7|2025.10.17|Y
+조지아|5|2026.02.06|N
+존스톤 아일랜드|7|2025.12.30|N
+중국|2|2026.07.02|N
+중앙아프리카공화국|7|2025.10.17|Y
+지부티|7|2026.07.02|N
+지브랄타|3|2025.12.30|N
+짐바브웨|7|2026.07.02|N
+차넬군도(건지)|3|2025.12.30|N
+차넬군도(저지)|2|2025.12.30|N
+차드|7|2025.10.17|N
+체코|1|2025.12.30|N
+칠레|2|2025.12.30|N
+카메룬|6|2025.10.17|Y
+카보베르데|5|2025.10.17|N
+카자흐스탄|5|2026.02.06|N
+카타르|2|2026.02.06|N
+캄보디아|6|2026.07.02|N
+캐나다|1|2025.12.30|N
+케냐|7|2026.07.02|N
+케이만군도|3|2025.12.30|N
+코랄섬|7|2025.12.30|N
+코모로|6|2024.11.21|N
+코소보|6|2026.02.06|N
+코스타리카|3|2025.10.17|N
+코코스 군도|7|2025.12.30|N
+코트디부아르|5|2025.10.17|N
+콜롬비아|4|2025.10.17|N
+콩고|7|2025.10.17|Y
+콩고민주공화국|7|2025.10.17|Y
+쿠바|7|2025.10.17|N
+쿠웨이트|2|2026.02.06|N
+쿡제도|4|2025.12.30|N
+퀴라소|5|2025.10.17|N
+크로아티아|3|2023.02.03|N
+크리스마스섬|7|2025.12.30|N
+키르기즈공화국|7|2026.02.06|N
+키리바시|6|2024.11.21|N
+킹맨리프|7|2025.12.30|N
+타지키스탄|7|2026.02.06|N
+탄자니아|6|2026.07.02|N
+태국|3|2026.07.02|N
+터크스 카이코스군도|2|2025.12.30|N
+토고|6|2025.10.17|N
+토켈라우|3|2025.12.30|N
+통가|5|2024.11.21|N
+투르크메니스탄|7|2026.02.06|Y
+투발루|5|2024.11.21|N
+튀니지|7|2026.02.06|N
+튀르키예(구 터키)|5|2026.02.06|N
+트리니다드토바고|3|2025.10.17|N
+파나마|4|2025.10.17|N
+파라과이|4|2025.10.17|N
+파키스탄|7|2026.07.02|N
+파푸아뉴기니|6|2026.07.02|N
+팔라우|3|2024.11.21|N
+팔레스타인|7|2026.02.06|N
+팔미라|7|2025.12.30|N
+페로군도|3|2025.12.30|N
+페루|3|2025.10.17|N
+포르투갈|2|2025.12.30|N
+포클랜드군도|4|2025.12.30|N
+폴란드|2|2025.12.30|N
+푸에르토리코|5|2025.12.30|N
+프랑스|1|2025.12.30|N
+프랑스령 극남군도|7|2025.12.30|N
+프랑스령 기아나|4|2025.12.30|N
+프랑스령 폴리네시아|2|2025.12.30|N
+피지|5|2026.07.02|N
+피트케안군도|7|2025.12.30|N
+핀란드|1|2025.12.30|N
+필리핀|3|2026.07.02|N
+허드섬|7|2024.11.21|N
+헝가리|3|2025.12.30|N
+호주|1|2025.12.30|N
+호주남극속령|7|2025.12.30|N
+홍콩|2|2026.07.02|N
+`;
+
+const countries = countryData.trim().split("\n").map(line => {
+  const [name,grade,date,watch] = line.trim().split("|");
+  return {name,grade:Number(grade),date,watch:watch === "Y"};
+});
+
+const periods = [30,60,90,120,150,180];
+
+// 적하보험료율: 0.0268%
+const CARGO_RATE = 0.0268;
+
+const tables = {
+  LC:[
+    [.018,.036,.048,.060,.066,.078,.108,0],
+    [.036,.072,.096,.114,.138,.156,.216,0],
+    [.042,.084,.108,.132,.162,.186,.252,0],
+    [.054,.102,.132,.162,.192,.222,.306,0],
+    [.060,.114,.150,.180,.216,.252,.342,0],
+    [.066,.132,.174,.210,.252,.288,.396,0]
+  ],
+  TT:[
+    [.078,.156,.204,.252,.300,.348,.468,.624],
+    [.096,.192,.252,.312,.366,.426,.576,.768],
+    [.114,.228,.300,.366,.438,.504,.684,.912],
+    [.144,.282,.372,.456,.540,.624,.846,1.128],
+    [.168,.336,.438,.540,.642,.744,1.008,1.344],
+    [.198,.390,.510,.624,.744,.858,1.170,1.560]
+  ]
+};
+
+const $ = id => document.getElementById(id);
+const form = $("form");
+
+const numericFields = [
+  "buy","sell","qty","targetRate","margin",
+  "sellDays","buyDays","negoDay","discount",
+  "interest","burdenInterest","opening",
+  "freight","other","loss","underwriter"
+];
+
+
+// Session-local rate settings. Empty EUR rates must never be treated as zero.
+const rateFields = ["discount", "interest", "burdenInterest"];
+function defaultCurrencyRates(){
+  return {USD: {discount:"5",interest:"4.5",burdenInterest:"4.5"},
+          EUR: {discount:"",interest:"",burdenInterest:""}};
+}
+let currencyRates = defaultCurrencyRates();
+let activeCurrency = "USD";
+function switchCurrency(){
+  rateFields.forEach(id => currencyRates[activeCurrency][id] = $(id).value);
+  activeCurrency = $("currency").value;
+  rateFields.forEach(id => $(id).value = currencyRates[activeCurrency][id]);
+  syncCurrencyLabels();
+}
+function syncCurrencyLabels(){
+  const currency = $("currency").value;
+  document.querySelectorAll("[data-currency]").forEach(el => el.textContent = currency);
+  $("currencyInfo").textContent = currency + " 기준 · 금리는 통화별로 이 화면을 사용하는 동안 유지됩니다. " +
+    "새로고침 또는 ‘기본값으로’ 선택 시 USD 기본금리(5%, 4.5%, 4.5%)와 EUR 빈 금리로 초기화됩니다.";
+}
+function validateCurrencyRates(v){
+  const required = ["interest","burdenInterest", ...(v.nego ? ["discount"] : [])];
+  const labels = {discount:"환가료율",interest:"사내기여이자율",burdenInterest:"사내부담이자율"};
+  const missing = required.filter(id => !Number.isFinite(v[id]));
+  if(missing.length) throw new Error(v.currency + " " + missing.map(id=>labels[id]).join(" · ") + "을 입력해 주세요.");
+}
+
+let latest = null;
+let saving = false;
+
+function normalizeZero(n){
+  return Math.abs(n) < 0.00000001 ? 0 : n;
+}
+
+function fmt(n,digits=2){
+  return normalizeZero(n).toLocaleString("en-US",{
+    minimumFractionDigits:digits,
+    maximumFractionDigits:digits
+  });
+}
+
+function fixed2(n){
+  return normalizeZero(n).toFixed(2);
+}
+
+function clean(n){
+  return String(Number(normalizeZero(n).toFixed(10)));
+}
+
+function pct(n){
+  return n === null ? "산정 불가" : fmt(n) + "%";
+}
+
+function syncSaveButtons(){
+  const disabled = !latest || saving;
+  ["export","savePNG","savePDF"].forEach(id => {
+    $(id).disabled = disabled;
+  });
+}
+
+function readValues(){
+  const v = {currency: $("currency").value};
+
+  numericFields.forEach(id => {
+    const raw = $(id).value;
+    v[id] = raw === "" ? NaN : Number(raw);
+  });
+
+  [
+    "trade","country","method","purchaseMethod",
+    "buyerGrade","sellTerm","buyTerm"
+  ].forEach(id => {
+    v[id] = $(id).value;
+  });
+
+  ["nego","risk","small"].forEach(id => {
+    v[id] = $(id).checked;
+  });
+
+  v.countryRecord = countries.find(c => c.name === v.country);
+  return v;
+}
+
+/*
+  금액은 원칙적으로 USD/톤입니다.
+  total로 시작하는 금액만 전체 거래 USD입니다.
+*/
+function calculate(v,saleOverride){
+  validateCurrencyRates(v);
+  const sell = saleOverride === undefined ? v.sell : saleOverride;
+
+  if(!v.countryRecord){
+    throw new Error("국가 목록에서 정확한 판매 국가명을 선택해 주세요.");
+  }
+
+  const active = [
+    v.buy,sell,v.qty,v.sellDays,v.buyDays,
+    v.freight,v.other,v.loss,v.underwriter,
+    v.interest,v.burdenInterest
+  ];
+
+  if(v.nego) active.push(v.negoDay,v.discount);
+  if(v.purchaseMethod === "LC") active.push(v.opening);
+
+  if(active.some(n => !Number.isFinite(n))){
+    throw new Error("필수 숫자 항목을 모두 입력해 주세요.");
+  }
+
+  if(sell <= 0 || v.buy < 0 || v.qty <= 0){
+    throw new Error("판매단가와 수량은 0보다 커야 하며 구매단가는 음수일 수 없습니다.");
+  }
+
+  if(
+    [v.buyDays,v.freight,v.other,v.interest,v.burdenInterest]
+      .some(n => n < 0) ||
+    v.loss < -100 ||
+    v.underwriter < 0 ||
+    (v.nego && (v.discount < 0 || v.negoDay < 0)) ||
+    (v.purchaseMethod === "LC" && v.opening < 0)
+  ){
+    throw new Error("기간·요율·비용의 입력 범위를 확인해 주세요.");
+  }
+
+  if(v.nego && v.negoDay > v.sellDays){
+    throw new Error("네고대금 수령일은 판매 만기일 이내여야 합니다.");
+  }
+
+  const row = periods.indexOf(v.sellDays);
+
+  const col = v.method === "LC"
+    ? v.countryRecord.grade - 1
+    : "ABCDEFGR".indexOf(v.buyerGrade);
+
+  if(row < 0 || col < 0 || col > 7 || (v.method === "LC" && col === 7)){
+    throw new Error("첨부 보험요율표에서 확인할 수 없는 조건입니다.");
+  }
+
+  // 수출보험료: 영업비용
+  const baseRate = tables[v.method][row][col];
+
+  const factors = [
+    1 + v.loss / 100,
+    1 + v.underwriter / 100,
+    v.risk ? 1.25 : 1,
+    v.small && v.method === "LC" ? 1.25 : 1,
+    v.trade === "triangle" ? 1.4 : 1
+  ];
+
+  const insuranceRate = factors.reduce(
+    (rate,factor) => rate * factor,
+    baseRate
+  );
+
+  const insurance = sell * insuranceRate / 100;
+
+  // 환가료: 금융비용
+  const discountDays = v.nego ? v.sellDays - v.negoDay : 0;
+
+  const discount = v.nego
+    ? sell * v.discount / 100 * discountDays / 365
+    : 0;
+
+  const receiptDay = v.nego ? v.negoDay : v.sellDays;
+  const gapDays = v.buyDays - receiptDay;
+
+  const interestBase = gapDays >= 0
+    ? (v.nego ? sell - discount : sell)
+    : v.buy;
+
+  const appliedInterestRate = gapDays >= 0
+    ? v.interest
+    : v.burdenInterest;
+
+  if(gapDays >= 0 && interestBase < 0){
+    throw new Error("할인 후 실수령액이 음수입니다. 환가료율과 기간을 확인해 주세요.");
+  }
+
+  // 양수는 기여이자, 음수는 부담이자
+  const signedInterest =
+    interestBase * appliedInterestRate / 100 * gapDays / 360;
+
+  // LC 개설수수료: 영업비용
+  const openingDays = v.purchaseMethod === "LC"
+    ? Math.max(30,v.buyDays)
+    : 0;
+
+  const opening = v.purchaseMethod === "LC"
+    ? v.buy * v.opening / 100 * openingDays / 365
+    : 0;
+
+  // 적하보험료: 영업비용
+  const cargoApplied = ["CIF","DAP","DDP"].includes(v.sellTerm);
+
+  const cargoInsurance = cargoApplied
+    ? sell * CARGO_RATE / 100
+    : 0;
+
+  /*
+    영업비용:
+    수출보험료 + 적하보험료 + 운임 + LC 개설료 + 기타 직접비
+  */
+  const operatingCost =
+    insurance +
+    cargoInsurance +
+    v.freight +
+    opening +
+    v.other;
+
+  /*
+    순 금융비용:
+    환가료 + 부담이자 - 기여이자
+  */
+  const finance = discount - signedInterest;
+
+  const cost = operatingCost + finance;
+  const tradeGap = sell - v.buy;
+  const operatingProfit = tradeGap - operatingCost;
+  const contributionProfit = operatingProfit - finance;
+
+  // 초록색 표: 구매단가 대비 요율
+  const tradeGapRate = v.buy > 0 ? tradeGap / v.buy * 100 : null;
+  const costRate = v.buy > 0 ? cost / v.buy * 100 : null;
+  const marginRate = v.buy > 0 ? contributionProfit / v.buy * 100 : null;
+
+  // 최종 손익표: 판매금액 대비 요율
+  const operatingProfitRate = operatingProfit / sell * 100;
+  const contributionProfitRate = contributionProfit / sell * 100;
+
+  return {
+    sell,baseRate,factors,insuranceRate,insurance,
+    discountDays,discount,receiptDay,gapDays,
+    interestBase,appliedInterestRate,signedInterest,
+    openingDays,opening,finance,
+    cargoApplied,cargoInsurance,operatingCost,
+    cost,tradeGap,tradeGapRate,costRate,marginRate,
+    operatingProfit,operatingProfitRate,
+    contributionProfit,contributionProfitRate,
+    netMargin:contributionProfit,
+    totalCost:cost * v.qty,
+    totalMargin:contributionProfit * v.qty,
+    totalRevenue:sell * v.qty,
+    totalOperatingProfit:operatingProfit * v.qty,
+    totalContributionProfit:contributionProfit * v.qty
+  };
+}
+
+function saleForMargin(v,desired){
+  if(!Number.isFinite(desired)){
+    throw new Error("우리 마진을 입력해 주세요.");
+  }
+
+  const anchor = Math.max(v.buy,1);
+  const costA = calculate(v,anchor).cost;
+  const costB = calculate(v,anchor + 1).cost;
+  const slope = costB - costA;
+  const denominator = 1 - slope;
+
+  if(Math.abs(denominator) < 0.0000000001){
+    throw new Error("현재 비용 조건으로는 마진을 역산할 수 없습니다.");
+  }
+
+  const sale = (
+    v.buy + desired + costA - slope * anchor
+  ) / denominator;
+
+  if(!Number.isFinite(sale) || sale <= 0){
+    throw new Error("입력한 마진으로 유효한 판매단가를 산정할 수 없습니다.");
+  }
+
+  return sale;
+}
+
+function updateFieldStates(v){
+  const c = v.countryRecord;
+  const lc = v.method === "LC";
+
+  $("countryInfo").textContent = c
+    ? `${c.name} · 국가 ${c.grade}등급 · 등급 적용일 ${c.date}` +
+      (c.watch ? " · 심층감시국" : "")
+    : "국가 목록에서 정확한 국가명을 선택해 주세요.";
+
+  $("lcGradeLabel").hidden = !lc;
+  $("buyerGradeLabel").hidden = lc;
+
+  $("lcGrade").value = c
+    ? `${c.name} · ${c.grade}등급`
+    : "국가를 선택해 주세요.";
+
+  $("negoDay").disabled = !v.nego;
+  $("discount").disabled = !v.nego;
+  $("opening").disabled = v.purchaseMethod !== "LC";
+  $("small").disabled = !lc;
+}
+
+const resultIDs = [
+  "tradeGap","tradeGapRate","perTon","costRate","netMargin","marginRate",
+  "totalCost","totalMargin","operatingCost","finance","allCosts",
+  "revenuePerTon","revenueTotal","revenueRate",
+  "opProfitPerTon","opProfitTotal","opProfitRate",
+  "contributionPerTon","contributionTotal","contributionRate"
+];
+
+function clearResults(message){
+  latest = null;
+  $("error").textContent = message;
+
+  resultIDs.forEach(id => {
+    $(id).textContent = "—";
+  });
+
+  ["marginFormula","rateFormula","totalFormula","profitFormula"].forEach(id => {
+    $(id).textContent = "";
+  });
+
+  $("operatingBreakdown").replaceChildren();
+  $("financeBreakdown").replaceChildren();
+  syncSaveButtons();
+}
+
+function addCostRow(container,title,amount,formula,credit=false){
+  const row = document.createElement("div");
+  row.className = "cost";
+
+  const line = document.createElement("div");
+  line.className = "line";
+
+  const name = document.createElement("span");
+  name.textContent = title;
+
+  const value = document.createElement("strong");
+  value.textContent = fmt(amount);
+  if(credit) value.className = "credit";
+
+  const explanation = document.createElement("small");
+  explanation.textContent = formula;
+
+  line.append(name,value);
+  row.append(line,explanation);
+  $(container).append(row);
+}
+
+function render(v,r){
+  $("error").textContent = "";
+
+  $("tradeGap").textContent = fmt(r.tradeGap);
+  $("tradeGapRate").textContent = pct(r.tradeGapRate);
+  $("perTon").textContent = fmt(r.cost);
+  $("costRate").textContent = pct(r.costRate);
+  $("netMargin").textContent = fmt(r.netMargin);
+  $("marginRate").textContent = pct(r.marginRate);
+  $("totalCost").textContent = fmt(r.totalCost);
+  $("totalMargin").textContent = fmt(r.totalMargin);
+
+  $("operatingCost").textContent = fmt(r.operatingCost);
+  $("finance").textContent = fmt(r.finance);
+  $("allCosts").textContent = fmt(r.cost);
+
+  $("marginFormula").textContent =
+    `판구매 갭 ${fmt(r.tradeGap)} − 영업비용 ${fmt(r.operatingCost)}` +
+    ` − 순 금융비용 ${fmt(r.finance)} = 기여익 ${fmt(r.netMargin)} ${v.currency}/톤`;
+
+  $("totalFormula").textContent =
+    `총 비용 = 전체 톤당 비용 × ${v.qty}톤. ` +
+    `총 마진 = 톤당 기여익 × ${v.qty}톤.`;
+
+  $("rateFormula").textContent = r.costRate === null
+    ? "구매단가가 0이므로 구매단가 대비 요율을 산정할 수 없습니다."
+    : `전체 비용 ${fmt(r.cost)} ÷ 구매단가 ${fmt(v.buy)} × 100` +
+      ` = ${fmt(r.costRate)}%.`;
+
+  $("operatingBreakdown").replaceChildren();
+  $("financeBreakdown").replaceChildren();
+
+  // 영업비용 상세
+  addCostRow(
+    "operatingBreakdown","수출보험료",r.insurance,
+    `판매단가 ${fmt(r.sell)} × (${r.baseRate.toFixed(3)}% × ` +
+    `${r.factors.map(clean).join(" × ")}) = ${fmt(r.insurance)} ${v.currency}/톤`
+  );
+
+  addCostRow(
+    "operatingBreakdown","적하보험료",r.cargoInsurance,
+    r.cargoApplied
+      ? `판매 ${v.sellTerm}: 판매단가 ${fmt(r.sell)} × ${CARGO_RATE}%` +
+        ` = ${fmt(r.cargoInsurance)} ${v.currency}/톤`
+      : `판매 ${v.sellTerm}: 적하보험료 자동 가산 미적용`
+  );
+
+  addCostRow(
+    "operatingBreakdown","운임",v.freight,
+    `당사 추가 부담 운임 입력값 · ${v.currency}/톤`
+  );
+
+  addCostRow(
+    "operatingBreakdown","구매 LC 개설수수료",r.opening,
+    v.purchaseMethod === "LC"
+      ? `${fmt(v.buy)} × 연 ${v.opening}% × ${r.openingDays}일 / 365` +
+        ` = ${fmt(r.opening)} ${v.currency}/톤 · 최소 30일`
+      : "구매 LC 미사용"
+  );
+
+  addCostRow(
+    "operatingBreakdown","기타 직접비",v.other,
+    `통관·관세·내륙운송 등 사용자 입력 · ${v.currency}/톤`
+  );
+
+  // 금융비용 상세
+  addCostRow(
+    "financeBreakdown","환가료",r.discount,
+    v.nego
+      ? `${fmt(r.sell)} × ${v.discount}% × ${r.discountDays}일 / 365` +
+        ` = ${fmt(r.discount)} ${v.currency}/톤`
+      : "네고 / 할인 미적용"
+  );
+
+  addCostRow(
+    "financeBreakdown",
+    r.gapDays >= 0 ? "사내기여이자 (비용 차감)" : "사내부담이자",
+    -r.signedInterest,
+    `${fmt(r.interestBase)} × ${r.appliedInterestRate}%` +
+    ` × ${Math.abs(r.gapDays)}일 / 360` +
+    ` = ${fmt(Math.abs(r.signedInterest))} ${v.currency}/톤`,
+    r.gapDays >= 0
+  );
+
+  $("revenuePerTon").textContent = fmt(r.sell);
+  $("revenueTotal").textContent = fmt(r.totalRevenue);
+  $("revenueRate").textContent = "100.00%";
+
+  $("opProfitPerTon").textContent = fmt(r.operatingProfit);
+  $("opProfitTotal").textContent = fmt(r.totalOperatingProfit);
+  $("opProfitRate").textContent = pct(r.operatingProfitRate);
+
+  $("contributionPerTon").textContent = fmt(r.contributionProfit);
+  $("contributionTotal").textContent = fmt(r.totalContributionProfit);
+  $("contributionRate").textContent = pct(r.contributionProfitRate);
+
+  $("profitFormula").textContent =
+    `영업이익 = 판매 ${fmt(r.sell)} − 구매 ${fmt(v.buy)}` +
+    ` − 영업비용 ${fmt(r.operatingCost)} = ${fmt(r.operatingProfit)} ${v.currency}/톤. ` +
+    `기여익 = 영업이익 ${fmt(r.operatingProfit)}` +
+    ` − 순 금융비용 ${fmt(r.finance)} = ${fmt(r.contributionProfit)} ${v.currency}/톤.`;
+
+  syncSaveButtons();
+}
+
+function update(changed){
+  let v = readValues();
+  updateFieldStates(v);
+  syncCurrencyLabels();
+
+  try{
+    validateCurrencyRates(v);
+    if(changed === "targetRate" || changed === "buy"){
+      if(!Number.isFinite(v.buy) || !Number.isFinite(v.targetRate)){
+        throw new Error("구매단가와 당사 타겟 요율을 입력해 주세요.");
+      }
+      $("sell").value = clean(v.buy * (1 + v.targetRate / 100));
+      v = readValues();
+    }else if(changed === "margin"){
+      $("sell").value = clean(saleForMargin(v,v.margin));
+      v = readValues();
+    }
+
+    const result = calculate(v);
+
+    if(document.activeElement !== $("margin")){
+      $("margin").value = fixed2(result.netMargin);
+    }
+
+    if(document.activeElement !== $("targetRate")){
+      $("targetRate").value = result.tradeGapRate === null
+        ? ""
+        : fixed2(result.tradeGapRate);
+    }
+
+    latest = {v,result};
+    render(v,result);
+  }catch(error){
+    clearResults(error.message || "계산 조건을 확인해 주세요.");
+  }
+}
+
+form.addEventListener("submit",e => e.preventDefault());
+
+form.addEventListener("input",e => {
+  const changed = e.target.id;
+  if(changed === "currency") switchCurrency();
+  if(rateFields.includes(changed)) currencyRates[activeCurrency][changed] = e.target.value;
+
+  if(changed === "method"){
+    $("nego").checked = $("method").value === "LC";
+  }
+
+  if(changed === "country"){
+    const c = countries.find(item => item.name === $("country").value);
+    $("risk").checked = Boolean(c && c.watch);
+  }
+
+  $("saveStatus").textContent = "";
+  update(changed);
+});
+
+$("reset").addEventListener("click",() => {
+  form.reset();
+  activeCurrency = "USD";
+  currencyRates = defaultCurrencyRates();
+  syncCurrencyLabels();
+  $("saveStatus").textContent = "";
+  update();
+});
+
+["targetRate","margin"].forEach(id => {
+  $(id).addEventListener("blur",() => {
+    const raw = $(id).value;
+    if(raw === "") return;
+    const n = Number(raw);
+    if(Number.isFinite(n)) $(id).value = fixed2(n);
+  });
+});
+
+function initializeCountryOptions(){
+  $("countries").replaceChildren();
+
+  countries.forEach(c => {
+    const option = document.createElement("option");
+    option.value = c.name;
+    $("countries").append(option);
+  });
+}
+
+function renderCountries(){
+  const q = $("countrySearch").value.trim();
+  $("countryRows").replaceChildren();
+
+  countries.filter(c => c.name.includes(q)).forEach(c => {
+    const tr = document.createElement("tr");
+
+    [c.name,c.grade,c.date,c.watch ? "심층감시국" : "—"].forEach(value => {
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.append(td);
+    });
+
+    $("countryRows").append(tr);
+  });
+}
+
+$("countrySearch").addEventListener("input",renderCountries);
+
+function renderRateTables(){
+  $("rateTables").replaceChildren();
+
+  ["LC","TT"].forEach(method => {
+    const heading = document.createElement("h3");
+    heading.textContent = method === "LC"
+      ? "L/C · 국가등급별 기본요율 (%)"
+      : "T/T · D/A, CAD, COD 수입자등급별 기본요율 (%)";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "scroll";
+
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
+    const header = document.createElement("tr");
+
+    const grades = method === "LC"
+      ? [1,2,3,4,5,6,7,8]
+      : ["A","B","C","D","E","F","G","R"];
+
+    ["기간 / 일",...grades].forEach(value => {
+      const th = document.createElement("th");
+      th.textContent = value;
+      header.append(th);
+    });
+
+    thead.append(header);
+    table.append(thead);
+
+    const tbody = document.createElement("tbody");
+
+    tables[method].forEach((rates,i) => {
+      const tr = document.createElement("tr");
+
+      [periods[i],...rates.map(n => n.toFixed(3))].forEach(value => {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.append(td);
+      });
+
+      tbody.append(tr);
+    });
+
+    table.append(tbody);
+    wrapper.append(table);
+    $("rateTables").append(heading,wrapper);
+  });
+
+  const note = document.createElement("p");
+  note.className = "help";
+  note.textContent =
+    "2026년 1월 기준입니다. LC 8등급의 0.000은 무료 보험료로 적용하지 않습니다. " +
+    "기본요율에 실별 할인·할증, Underwriter, 비상위험, " +
+    "소규모 개설은행(LC), 중계무역 계수를 곱합니다.";
+
+  $("rateTables").append(note);
+}
+
+/* 공통 다운로드 */
+function downloadFile(blob,name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url),30000);
+}
+
+function fileName(extension){
+  const d = new Date();
+  const p = n => String(n).padStart(2,"0");
+
+  return "trade-result-" + $("currency").value + "-" +
+    d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) +
+    "-" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) +
+    "." + extension;
+}
+
+function getSnapshot(){
+  if(!latest) throw new Error("먼저 유효한 거래 조건을 입력해 주세요.");
+  return JSON.parse(JSON.stringify(latest));
+}
+
+/* CSV */
+$("export").addEventListener("click",() => {
+  if(!latest) return;
+
+  const {v,result:r} = latest;
+
+  const rows = [
+    ["항목","값","단위","분류 또는 요율 기준"],
+    ["거래 통화",v.currency,"",""],
+    ["판매 국가",v.country,"",""],
+    ["국가등급",v.countryRecord.grade,"",""],
+    ["거래 유형",v.trade === "triangle" ? "중계무역" : "직수출","",""],
+    ["판매 인도조건",v.sellTerm,"",""],
+    ["구매 인도조건",v.buyTerm,"",""],
+    ["판매 결제",v.method,"",""],
+    ["판매 Usance",v.sellDays,"일",""],
+    ["구매 지급수단",v.purchaseMethod,"",""],
+    ["구매 Usance",v.buyDays,"일",""],
+    ["수량",v.qty,"톤",""],
+    ["판매단가",r.sell,`${v.currency}/톤`,""],
+    ["구매단가",v.buy,`${v.currency}/톤`,""],
+    ["타겟 요율",r.tradeGapRate === null ? "산정 불가" : r.tradeGapRate,"%","구매단가"],
+    ["판구매 갭",r.tradeGap,`${v.currency}/톤`,""],
+    ["보험 기본요율",r.baseRate,"%",""],
+    ["보험 적용요율",r.insuranceRate,"%",""],
+    ["실별 할인/할증률",v.loss,"%",""],
+    ["Underwriter 할증률",v.underwriter,"%",""],
+    ["비상위험 할증",v.risk ? "적용" : "미적용","",""],
+    ["소규모 개설은행 할증",v.small && v.method === "LC" ? "적용" : "미적용","",""],
+    ["수출보험료",r.insurance,`${v.currency}/톤`,"영업비용"],
+    ["적하보험료율",r.cargoApplied ? CARGO_RATE : 0,"%","판매단가"],
+    ["적하보험료",r.cargoInsurance,`${v.currency}/톤`,"영업비용"],
+    ["운임",v.freight,`${v.currency}/톤`,"영업비용"],
+    ["LC 개설 연 수수료율",v.purchaseMethod === "LC" ? v.opening : "","연 %",""],
+    ["LC 수수료 적용일수",r.openingDays,"일",""],
+    ["LC 개설수수료",r.opening,`${v.currency}/톤`,"영업비용"],
+    ["기타 직접비",v.other,`${v.currency}/톤`,"영업비용"],
+    ["영업비용 합계",r.operatingCost,`${v.currency}/톤`,"영업비용"],
+    ["네고 적용",v.nego ? "적용" : "미적용","",""],
+    ["네고 수령일",v.nego ? v.negoDay : "","일",""],
+    ["환가료율",v.nego ? v.discount : "","연 %",""],
+    ["기여이자율",v.interest,"연 %",""],
+    ["부담이자율",v.burdenInterest,"연 %",""],
+    ["환가료",r.discount,`${v.currency}/톤`,"금융비용"],
+    ["사내기여이자",Math.max(r.signedInterest,0),`${v.currency}/톤`,"금융비용 차감"],
+    ["사내부담이자",Math.max(-r.signedInterest,0),`${v.currency}/톤`,"금융비용"],
+    ["순 금융비용",r.finance,`${v.currency}/톤`,"금융비용"],
+    ["전체 비용",r.cost,`${v.currency}/톤`,""],
+    ["비용 요율",r.costRate === null ? "산정 불가" : r.costRate,"%","구매단가"],
+    ["기여익 요율(구매단가 기준)",r.marginRate === null ? "산정 불가" : r.marginRate,"%","구매단가"],
+    ["보험요율 기준","2026년 1월 / 2026.01.15~2027.01.14 선적분","",""],
+    ["국가등급 기준","2026년 7월 / 2026.07.02 자료","",""],
+    ["총 비용",r.totalCost,`${v.currency}`,""],
+    ["총 마진",r.totalMargin,`${v.currency}`,""],
+    ["외형 톤당",r.sell,`${v.currency}/톤`,""],
+    ["외형 총액",r.totalRevenue,`${v.currency}`,""],
+    ["외형 요율",100,"%","판매금액"],
+    ["영업이익 톤당",r.operatingProfit,`${v.currency}/톤`,""],
+    ["영업이익 총액",r.totalOperatingProfit,`${v.currency}`,""],
+    ["영업이익률",r.operatingProfitRate,"%","판매금액"],
+    ["기여익 톤당",r.contributionProfit,`${v.currency}/톤`,""],
+    ["기여익 총액",r.totalContributionProfit,`${v.currency}`,""],
+    ["기여익률",r.contributionProfitRate,"%","판매금액"]
+  ];
+
+  const csv = "\uFEFF" + rows.map(row =>
+    row.map(value => '"' + String(value).replace(/"/g,'""') + '"').join(",")
+  ).join("\r\n");
+
+  downloadFile(
+    new Blob([csv],{type:"text/csv;charset=utf-8"}),
+    fileName("csv")
+  );
+});
+
+/*
+  보고서 2페이지:
+  1. 거래조건·수익성·최종손익
+  2. 영업비용·금융비용·적용기준
+*/
+async function createReportPages(snapshot){
+  if(document.fonts && document.fonts.ready){
+    await document.fonts.ready;
+  }
+
+  const {v,result:r} = snapshot;
+  const pages = [];
+  const W = 1240;
+  const H = 1754;
+  const L = 64;
+  const R = W - L;
+  const CW = R - L;
+  const family = '"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif';
+
+  const now = new Date();
+  const p = n => String(n).padStart(2,"0");
+
+  const date =
+    now.getFullYear()+"-"+p(now.getMonth()+1)+"-"+p(now.getDate())+
+    " "+p(now.getHours())+":"+p(now.getMinutes());
+
+  function newPage(pageNumber,title){
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+
+    const ctx = canvas.getContext("2d");
+
+    if(!ctx){
+      throw new Error("이 브라우저에서 이미지 생성 기능을 사용할 수 없습니다.");
+    }
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0,0,W,H);
+
+    function text(value,x,y,size=24,bold=false,color="#244438",align="left"){
+      ctx.font = (bold ? "700 " : "400 ") + size + "px " + family;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.textBaseline = "top";
+      ctx.fillText(String(value),x,y);
+    }
+
+    function wrap(value,x,y,maxWidth,size=20,lineHeight=32,color="#7a8c74"){
+      ctx.font = "400 " + size + "px " + family;
+      let cy = y;
+
+      for(const paragraph of String(value).split("\n")){
+        let line = "";
+
+        for(const character of paragraph){
+          const candidate = line + character;
+
+          if(ctx.measureText(candidate).width > maxWidth && line){
+            text(line,x,cy,size,false,color);
+            cy += lineHeight;
+            line = character;
+          }else{
+            line = candidate;
+          }
+        }
+
+        if(line) text(line,x,cy,size,false,color);
+        cy += lineHeight;
+      }
+
+      return cy;
+    }
+
+    function line(y){
+      ctx.strokeStyle = "#dfe7dd";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(L,y);
+      ctx.lineTo(R,y);
+      ctx.stroke();
+    }
+
+    text("TRADE DESK",L,48,19,true,"#6d8b72");
+    text(date,R,48,18,false,"#7a8c74","right");
+    text(title+" · "+v.currency,L,92,38,true);
+    line(152);
+
+    text(
+      "파이낸싱 계산 결과 · "+pageNumber+" / 2",
+      L,H-48,17,false,"#879b80"
+    );
+
+    pages.push(canvas);
+    return {canvas,ctx,text,wrap,line};
+  }
+
+  const a = newPage(1,"거래 수익성 보고서");
+  let y = 180;
+
+  const purchaseMethod = v.purchaseMethod === "LC"
+    ? "L/C"
+    : v.purchaseMethod === "TT" ? "T/T" : "국내 외상 · 구매승인서";
+
+  const conditionRows = [
+    ["판매 국가 / 유형",
+      `${v.currency} · ${v.country} · ${v.countryRecord.grade}등급 / `+
+      (v.trade === "triangle" ? "중계무역" : "직수출")],
+    ["판 / 구매 인도조건",`${v.sellTerm} / ${v.buyTerm}`],
+    ["판 / 구매 결제",
+      `${v.method} ${v.sellDays}일 / ${purchaseMethod} ${v.buyDays}일`],
+    ["판매 / 구매단가",`${fmt(r.sell)} / ${fmt(v.buy)} ${v.currency}/톤`],
+    ["수량 / 타겟 요율",`${fmt(v.qty)}톤 / ${pct(r.tradeGapRate)}`],
+    ["네고 / 적하보험",
+      (v.nego ? `네고 수령일 +${v.negoDay}일` : "네고 미적용")+
+      " / "+(r.cargoApplied ? `${CARGO_RATE}% 적용` : "미적용")]
+  ];
+
+  conditionRows.forEach(([label,value]) => {
+    a.text(label,L,y,21,false,"#7a8c74");
+    y = a.wrap(value,L+290,y,CW-290,23,32,"#244438") + 10;
+  });
+
+  y += 10;
+
+  const summaryTop = y;
+  const summaryHeight = 405;
+
+  a.ctx.fillStyle = "#173e32";
+  a.ctx.fillRect(L,summaryTop,CW,summaryHeight);
+
+  a.text("거래 수익성 요약",L+26,summaryTop+23,27,true,"#ffffff");
+
+  const summaryRows = [
+    ["판구매 갭",`${fmt(r.tradeGap)} ${v.currency}/톤 / ${pct(r.tradeGapRate)}`],
+    ["예상 톤당 비용",`${fmt(r.cost)} ${v.currency}/톤 / ${pct(r.costRate)}`],
+    ["예상 톤당 마진",`${fmt(r.netMargin)} ${v.currency}/톤 / ${pct(r.marginRate)}`],
+    ["총 비용",`${fmt(r.totalCost)} ${v.currency}`],
+    ["총 마진",`${fmt(r.totalMargin)} ${v.currency}`]
+  ];
+
+  let sy = summaryTop + 80;
+
+  summaryRows.forEach(([label,value]) => {
+    a.text(label,L+26,sy,23,false,"#d2e1cb");
+
+    a.ctx.font = "700 25px "+family;
+    const maxWidth = CW-355;
+    const measured = a.ctx.measureText(value).width;
+    const size = measured > maxWidth
+      ? Math.max(14,25*maxWidth/measured)
+      : 25;
+
+    a.text(value,R-26,sy,size,true,"#ffffff","right");
+    sy += 56;
+  });
+
+  a.text(
+    "위 요율은 구매단가 대비 기준입니다.",
+    L+26,summaryTop+summaryHeight-36,18,false,"#b6c8ad"
+  );
+
+  y = summaryTop + summaryHeight + 35;
+  a.text("최종 손익 요약",L,y,28,true);
+  y += 48;
+
+  const columns = [L+14,L+445,L+815,R-14];
+
+  a.ctx.fillStyle = "#edf4e8";
+  a.ctx.fillRect(L,y,CW,45);
+
+  a.text("구분",columns[0],y+10,20,true);
+  a.text(`톤당 ${v.currency}`,columns[1],y+10,20,true,"#244438","right");
+  a.text(`총 ${v.currency}`,columns[2],y+10,20,true,"#244438","right");
+  a.text("매출 대비 요율",columns[3],y+10,20,true,"#244438","right");
+
+  y += 54;
+
+  [
+    ["외형",r.sell,r.totalRevenue,100],
+    ["영업이익",r.operatingProfit,r.totalOperatingProfit,r.operatingProfitRate],
+    ["기여익",r.contributionProfit,r.totalContributionProfit,r.contributionProfitRate]
+  ].forEach(([label,perTon,total,rate]) => {
+    a.text(label,columns[0],y,23,true);
+    a.text(fmt(perTon),columns[1],y,23,false,"#244438","right");
+    a.text(fmt(total),columns[2],y,23,false,"#244438","right");
+    a.text(pct(rate),columns[3],y,23,false,"#244438","right");
+
+    y += 42;
+    a.line(y);
+    y += 14;
+  });
+
+  y += 8;
+
+  a.wrap(
+    "영업이익 = 판매 − 구매 − 수출보험료 − 적하보험료 − 운임 − LC 개설료 − 기타 직접비\n"+
+    "기여익 = 영업이익 − 환가료 − 부담이자 + 기여이자\n"+
+    "최종 손익표는 매출 대비, 초록색 요약표는 구매단가 대비 요율입니다.\n"+
+    "총액은 중간 반올림 없이 계산한 톤당 원값에 수량을 곱합니다.",
+    L,y,CW,19,30
+  );
+
+  const b = newPage(2,"비용 상세 및 계산 기준");
+  let by = 178;
+
+  function section(title){
+    b.text(title,L,by,25,true);
+    by += 43;
+  }
+
+  function detail(label,value,formula){
+    b.text(label,L,by,22);
+    b.text(fmt(value)+` ${v.currency}/톤`,R,by,23,true,"#244438","right");
+    by += 32;
+    by = b.wrap(formula,L,by,CW,18,27) + 9;
+    b.line(by);
+    by += 14;
+  }
+
+  section("영업비용 · 영업이익에서 차감");
+
+  detail(
+    "수출보험료",r.insurance,
+    `${fmt(r.sell)} × 적용 보험요율 ${fmt(r.insuranceRate,4)}%`
+  );
+
+  detail(
+    "적하보험료",r.cargoInsurance,
+    r.cargoApplied
+      ? `판매 ${v.sellTerm}: ${fmt(r.sell)} × ${CARGO_RATE}%`
+      : `판매 ${v.sellTerm}: 자동 가산 미적용`
+  );
+
+  detail("운임",v.freight,"당사 추가 부담 운임 입력값");
+
+  detail(
+    "구매 LC 개설수수료",r.opening,
+    v.purchaseMethod === "LC"
+      ? `${fmt(v.buy)} × 연 ${v.opening}% × ${r.openingDays}일 / 365 · 최소 30일`
+      : "구매 LC 미사용"
+  );
+
+  detail("기타 직접비",v.other,"통관·관세·내륙운송 등 사용자 입력");
+
+  by += 5;
+  section("금융비용 · 기여익에서 추가 반영");
+
+  detail(
+    "환가료",r.discount,
+    v.nego
+      ? `${fmt(r.sell)} × 연 ${v.discount}% × ${r.discountDays}일 / 365`
+      : "네고 / 할인 미적용"
+  );
+
+  detail(
+    r.gapDays >= 0 ? "사내기여이자 (비용 차감)" : "사내부담이자",
+    -r.signedInterest,
+    `${fmt(r.interestBase)} × 연 ${r.appliedInterestRate}%`+
+    ` × ${Math.abs(r.gapDays)}일 / 360`
+  );
+
+  by = b.wrap(
+    `영업비용 ${fmt(r.operatingCost)} + 순 금융비용 ${fmt(r.finance)}`+
+    ` = 전체 비용 ${fmt(r.cost)} ${v.currency}/톤`,
+    L,by,CW,21,30,"#244438"
+  ) + 20;
+
+  section("적용 기준 · Remark");
+
+  b.wrap(
+    "보험요율: 2026년 1월 / 2026.01.15~2027.01.14 선적분\n"+
+    "국가등급: 2026년 7월 / 2026.07.02 첨부자료\n"+
+    `수출보험 기본요율 ${fmt(r.baseRate,3)}% × 계수 `+
+    r.factors.map(clean).join(" × ")+
+    ` = 적용요율 ${fmt(r.insuranceRate,4)}%\n`+
+    "적하보험은 판매 CIF·DAP·DDP에 판매단가의 0.0268%를 적용합니다.\n"+
+    "수출보험료·적하보험료·운임·LC 개설료는 영업비용입니다.\n"+
+    "환가료는 365일, 기여·부담이자는 360일 기준입니다.\n"+
+    "LC 개설수수료는 A/S~30일까지 최소 30일을 적용합니다.\n"+
+    "보험 인수 가능 여부와 최종 적용요율은 별도 확인하세요.",
+    L,by,CW,18,27
+  );
+
+  return pages;
+}
+
+function pagesToPNG(pages){
+  return new Promise((resolve,reject) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = pages[0].width;
+    canvas.height = pages.reduce((sum,page) => sum+page.height,0);
+
+    const ctx = canvas.getContext("2d");
+
+    if(!ctx){
+      reject(new Error("PNG 생성 기능을 사용할 수 없습니다."));
+      return;
+    }
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    let y = 0;
+
+    pages.forEach(page => {
+      ctx.drawImage(page,0,y);
+      y += page.height;
+    });
+
+    canvas.toBlob(blob => {
+      if(blob) resolve(blob);
+      else reject(new Error("PNG 파일을 만들지 못했습니다."));
+    },"image/png");
+  });
+}
+
+/* 외부 라이브러리 없이 다중 페이지 PDF 생성 */
+function pagesToPDF(pages){
+  const encoder = new TextEncoder();
+  const encode = text => encoder.encode(text);
+  const parts = [];
+  const offsets = [0];
+  let length = 0;
+
+  function add(part){
+    const bytes = typeof part === "string" ? encode(part) : part;
+    parts.push(bytes);
+    length += bytes.length;
+  }
+
+  function object(id,body){
+    offsets[id] = length;
+    add(id+" 0 obj\n");
+    add(body);
+    add("\nendobj\n");
+  }
+
+  add("%PDF-1.4\n");
+  object(1,"<< /Type /Catalog /Pages 2 0 R >>");
+
+  const kids = pages.map((_,i) => (3+i*3)+" 0 R").join(" ");
+
+  object(
+    2,
+    `<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`
+  );
+
+  pages.forEach((canvas,i) => {
+    const pageID = 3+i*3;
+    const imageID = pageID+1;
+    const contentID = pageID+2;
+
+    const binary = atob(
+      canvas.toDataURL("image/jpeg",0.96).split(",")[1]
+    );
+
+    const image = new Uint8Array(binary.length);
+
+    for(let n=0;n<binary.length;n++){
+      image[n] = binary.charCodeAt(n);
+    }
+
+    const pageW = 595.28;
+    const pageH = 841.89;
+    const margin = 18;
+
+    const scale = Math.min(
+      (pageW-margin*2)/canvas.width,
+      (pageH-margin*2)/canvas.height
+    );
+
+    const imageW = canvas.width*scale;
+    const imageH = canvas.height*scale;
+    const x = (pageW-imageW)/2;
+    const y = (pageH-imageH)/2;
+
+    const content = encode(
+      `q\n${imageW.toFixed(4)} 0 0 ${imageH.toFixed(4)} `+
+      `${x.toFixed(4)} ${y.toFixed(4)} cm\n/Im0 Do\nQ\n`
+    );
+
+    object(
+      pageID,
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] `+
+      `/Resources << /XObject << /Im0 ${imageID} 0 R >> >> `+
+      `/Contents ${contentID} 0 R >>`
+    );
+
+    offsets[imageID] = length;
+
+    add(
+      `${imageID} 0 obj\n`+
+      `<< /Type /XObject /Subtype /Image /Width ${canvas.width} `+
+      `/Height ${canvas.height} /ColorSpace /DeviceRGB `+
+      `/BitsPerComponent 8 /Filter /DCTDecode /Length ${image.length} >>\nstream\n`
+    );
+
+    add(image);
+    add("\nendstream\nendobj\n");
+
+    offsets[contentID] = length;
+
+    add(
+      `${contentID} 0 obj\n<< /Length ${content.length} >>\nstream\n`
+    );
+
+    add(content);
+    add("endstream\nendobj\n");
+  });
+
+  const size = 3+pages.length*3;
+  const xref = length;
+
+  add(`xref\n0 ${size}\n`);
+  add("0000000000 65535 f \n");
+
+  for(let id=1;id<size;id++){
+    add(String(offsets[id]).padStart(10,"0")+" 00000 n \n");
+  }
+
+  add(
+    `trailer\n<< /Size ${size} /Root 1 0 R >>\n`+
+    `startxref\n${xref}\n%%EOF\n`
+  );
+
+  return new Blob(parts,{type:"application/pdf"});
+}
+
+async function saveReport(type){
+  if(saving) return;
+
+  try{
+    const snapshot = getSnapshot();
+
+    saving = true;
+    syncSaveButtons();
+    $("saveStatus").textContent = "저장 파일을 생성하고 있습니다…";
+
+    const pages = await createReportPages(snapshot);
+
+    const blob = type === "png"
+      ? await pagesToPNG(pages)
+      : pagesToPDF(pages);
+
+    downloadFile(blob,fileName(type));
+
+    $("saveStatus").textContent =
+      "다운로드를 요청했습니다. 브라우저의 다운로드 목록을 확인하세요.";
+  }catch(error){
+    $("saveStatus").textContent =
+      error.message || "파일을 저장하지 못했습니다. 다시 시도해 주세요.";
+  }finally{
+    saving = false;
+    syncSaveButtons();
+  }
+}
+
+$("savePNG").addEventListener("click",() => saveReport("png"));
+$("savePDF").addEventListener("click",() => saveReport("pdf"));
+
+initializeCountryOptions();
+renderCountries();
+renderRateTables();
+update();
+</script>
+
+</body>
+</html>
